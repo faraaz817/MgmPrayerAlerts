@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mgm_bg">#0F1419</color>
+    <color name="mgm_surface">#1A222C</color>
+    <color name="mgm_gold">#D4B483</color>
+    <color name="mgm_text">#F4F1EA</color>
+    <color name="mgm_muted">#9AA3AD</color>
+    <color name="mgm_accent">#2F6B5A</color>
+</resources>

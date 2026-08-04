@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MGM Prayer Alerts</string>
+    <string name="today_title">Today at Melbourne Grand Mosque</string>
+    <string name="settings_title">Notification settings</string>
+    <string name="refresh">Refresh times</string>
+    <string name="test">Test</string>
+    <string name="sound">Sound</string>
+    <string name="default_sound">Default sound</string>
+    <string name="last_fetch">Last fetch: %1$s</string>
+    <string name="fetch_failed">Could not fetch prayer times. Showing last saved schedule if available.</string>
+    <string name="permission_needed">Notification permission is required for alerts.</string>
+    <string name="exact_alarm_needed">Exact alarms are required so prayer alerts fire on time. Open settings if prompted.</string>
+    <string name="exact_alarm_blocked">Exact alarms are off — prayer notifications will not fire on time. Tap Refresh after enabling.</string>
+    <string name="notifications_blocked">Notifications are disabled for this app.</string>
+    <string name="stale_schedule">No schedule for today yet. Pull fresh times when online.</string>
+    <string name="scheduled_count">Scheduled %1$d remaining alert(s) for today</string>
+    <string name="jamaat_label">Jamaat: %1$s</string>
+    <string name="notification_title">%1$s Azaan</string>
+    <string name="notification_body">Azaan %1$s · Jamaat %2$s</string>
+    <string name="jumuah_body">Jumu\'ah session starts at %1$s</string>
+</resources>

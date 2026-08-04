@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MgmPrayerAlerts" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/mgm_gold</item>
+        <item name="colorSecondary">@color/mgm_accent</item>
+        <item name="android:statusBarColor">@color/mgm_bg</item>
+        <item name="android:navigationBarColor">@color/mgm_bg</item>
+        <item name="android:windowBackground">@color/mgm_bg</item>
+        <item name="android:textColorPrimary">@color/mgm_text</item>
+        <item name="android:textColorSecondary">@color/mgm_muted</item>
+    </style>
+</resources>
