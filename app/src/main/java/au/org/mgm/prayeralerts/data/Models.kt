@@ -47,20 +47,4 @@ data class DaySchedule(
         PrayerTarget.JUMUAH_2 -> jumuah.getOrNull(1)?.let { PrayerPair(it, it) }
         PrayerTarget.JUMUAH_3 -> jumuah.getOrNull(2)?.let { PrayerPair(it, it) }
     }
-
-    fun displayRows(isFriday: Boolean): List<Pair<String, PrayerPair>> {
-        val rows = mutableListOf(
-            "Fajr" to fajr,
-            "Dhuhr" to dhuhr,
-            "Asr" to asr,
-            "Maghrib" to maghrib,
-            "Isha" to isha
-        )
-        if (isFriday) {
-            jumuah.forEachIndexed { index, time ->
-                rows.add("Jumu'ah #${index + 1}" to PrayerPair(time, time))
-            }
-        }
-        return rows
-    }
 }

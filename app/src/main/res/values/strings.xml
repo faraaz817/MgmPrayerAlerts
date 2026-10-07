@@ -1,21 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MGM Prayer Alerts</string>
-    <string name="today_title">Today at Melbourne Grand Mosque</string>
-    <string name="settings_title">Notification settings</string>
+    <string name="mosque_name">Melbourne Grand Mosque</string>
     <string name="refresh">Refresh times</string>
-    <string name="test">Test</string>
-    <string name="sound">Sound</string>
+
+    <!-- Header status line -->
+    <string name="status_refreshing">Updating prayer times…</string>
+    <string name="status_updated">Updated %1$s</string>
+    <string name="status_no_schedule">Today\'s times haven\'t loaded yet</string>
+    <string name="status_alerts_none">no more alerts today</string>
+    <plurals name="alerts_scheduled">
+        <item quantity="one">%d alert set for today</item>
+        <item quantity="other">%d alerts set for today</item>
+    </plurals>
+    <string name="status_joined">%1$s · %2$s</string>
+
+    <!-- Next prayer card -->
+    <string name="next_prayer">Next prayer</string>
+    <string name="hero_today">Today</string>
+    <string name="hero_loading_title">Loading today\'s times…</string>
+    <string name="hero_loading_body">Fetching the latest timetable from Melbourne Grand Mosque.</string>
+    <string name="hero_empty_title">No times for today yet</string>
+    <string name="hero_empty_body">Connect to the internet and tap refresh. Alerts are scheduled as soon as times load.</string>
+    <string name="hero_done_title">That\'s all for today</string>
+    <string name="hero_done_body">Tomorrow\'s times load automatically at 3:00 AM.</string>
+    <string name="hero_countdown_jamaat">%1$s · Jamaat %2$s</string>
+    <string name="countdown_minutes">in %1$d min</string>
+    <string name="countdown_hours">in %1$d hr</string>
+    <string name="countdown_hours_minutes">in %1$d hr %2$d min</string>
+    <string name="alert_on">Alert on</string>
+    <string name="alert_off">Alert off</string>
+
+    <!-- Times -->
+    <string name="today_times">Today\'s times</string>
+    <string name="column_azaan">Azaan</string>
+    <string name="column_jamaat">Jamaat</string>
+    <string name="jumuah_title">Jumu\'ah</string>
+    <string name="jumuah_session">Session %1$d</string>
+
+    <!-- Alerts -->
+    <string name="alerts_title">Alerts</string>
+    <string name="alerts_help">Each alert fires at Azaan time. Tap a prayer to change its sound or send a test.</string>
+    <string name="alerts_friday_header">Friday · Jumu\'ah</string>
+    <string name="setting_subtitle">%1$s · %2$s</string>
+    <string name="alert_switch_description">%1$s alert</string>
     <string name="default_sound">Default sound</string>
-    <string name="last_fetch">Last fetch: %1$s</string>
-    <string name="fetch_failed">Could not fetch prayer times. Showing last saved schedule if available.</string>
-    <string name="permission_needed">Notification permission is required for alerts.</string>
+    <string name="choose_sound">Choose sound…</string>
+    <string name="use_default_sound">Use default sound</string>
+    <string name="send_test">Send test notification</string>
+    <string name="sound_saved">Sound saved for %1$s</string>
+    <string name="sound_save_failed">Couldn\'t save that sound</string>
+    <string name="footer_source">Times from awqat.com.au/mgm · refreshed daily at 3:00 AM</string>
+
+    <!-- Banners -->
+    <string name="banner_notifications_title">Notifications are off</string>
+    <string name="banner_notifications_body">Prayer alerts can\'t appear until you allow notifications for this app.</string>
+    <string name="banner_notifications_action">Turn on</string>
+    <string name="banner_exact_title">Exact alarms are off</string>
+    <string name="banner_exact_body">Prayer alerts can\'t be scheduled until you allow exact alarms.</string>
+    <string name="banner_exact_action">Allow</string>
+    <string name="banner_fetch_title">Couldn\'t update prayer times</string>
+    <string name="banner_fetch_body_cached">Showing the times saved earlier today.</string>
+    <string name="banner_fetch_body_empty">Check your internet connection and try again.</string>
+    <string name="banner_fetch_action">Retry</string>
+
     <string name="exact_alarm_needed">Exact alarms are required so prayer alerts fire on time. Open settings if prompted.</string>
-    <string name="exact_alarm_blocked">Exact alarms are off — prayer notifications will not fire on time. Tap Refresh after enabling.</string>
     <string name="notifications_blocked">Notifications are disabled for this app.</string>
-    <string name="stale_schedule">No schedule for today yet. Pull fresh times when online.</string>
-    <string name="scheduled_count">Scheduled %1$d remaining alert(s) for today</string>
-    <string name="jamaat_label">Jamaat: %1$s</string>
     <string name="notification_title">%1$s Azaan</string>
     <string name="notification_body">Azaan %1$s · Jamaat %2$s</string>
     <string name="jumuah_body">Jumu\'ah session starts at %1$s</string>
