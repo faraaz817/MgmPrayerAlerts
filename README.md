@@ -44,9 +44,13 @@ gradlew.bat assembleDebug
 
 Or open the folder in Android Studio and Run.
 
-## APK from GitHub
+## Releases
 
-Every push runs `.github/workflows/build-apk.yml`, which runs the unit tests, builds the debug APK and commits it to `app/release/app-debug.apk` on that branch. Download it from GitHub on your phone and install.
+Download the latest APK from the repository's **Releases** page (`MgmPrayerAlerts-vX.Y.Z-debug.apk`).
+
+Every push runs `.github/workflows/build-apk.yml`, which runs the unit tests and builds the debug APK (attached to the workflow run). When `main` has a `versionName` with no release yet, it publishes release `v<versionName>` with the APK attached and that version's notes from `CHANGELOG.md`.
+
+To publish a new release: bump `versionCode` and `versionName` in `app/build.gradle.kts`, add a `## x.y.z` section at the top of `CHANGELOG.md`, and merge to `main`.
 
 CI signs with a fresh debug key on each run unless the `DEBUG_KEYSTORE_BASE64` repository secret is set, so without it each CI APK needs an uninstall before installing (losing toggles and custom sounds). To sign CI builds with your own debug key, so they install over your local builds and each other:
 
