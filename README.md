@@ -44,6 +44,18 @@ gradlew.bat assembleDebug
 
 Or open the folder in Android Studio and Run.
 
+## APK from GitHub
+
+Every push runs `.github/workflows/build-apk.yml`, which runs the unit tests, builds the debug APK and commits it to `app/release/app-debug.apk` on that branch. Download it from GitHub on your phone and install.
+
+CI signs with a fresh debug key on each run unless the `DEBUG_KEYSTORE_BASE64` repository secret is set, so without it each CI APK needs an uninstall before installing (losing toggles and custom sounds). To sign CI builds with your own debug key, so they install over your local builds and each other:
+
+```bat
+certutil -encode "%USERPROFILE%\.android\debug.keystore" keystore.b64
+```
+
+Paste the whole contents of `keystore.b64` into **Settings → Secrets and variables → Actions → New repository secret** named `DEBUG_KEYSTORE_BASE64`.
+
 ## Test checklist
 
 - [ ] Today’s times match https://awqat.com.au/mgm/ (and MGM website)

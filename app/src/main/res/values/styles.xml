@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Text styles for the main screen. All colours come from colors.xml. -->
+    <style name="MgmText" />
+
+    <style name="MgmText.Overline">
+        <item name="android:textSize">12sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.12</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/mgm_gold</item>
+    </style>
+
+    <style name="MgmText.SectionLabel" parent="MgmText.Overline">
+        <item name="android:textColor">@color/mgm_muted</item>
+    </style>
+
+    <style name="MgmText.ColumnHeader">
+        <item name="android:textSize">11sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">@color/mgm_muted</item>
+    </style>
+
+    <!-- Tabular figures so times line up in columns. -->
+    <style name="MgmText.Time">
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFeatureSettings">tnum</item>
+        <item name="android:textColor">@color/mgm_text</item>
+    </style>
+
+    <style name="MgmActionRow">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:drawablePadding">16dp</item>
+        <item name="android:drawableTint">@color/mgm_gold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/mgm_text</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+</resources>
