@@ -72,6 +72,12 @@ class AppPreferences(context: Context) {
         prefs.edit().putString(KEY_SCHEDULE, json.toString()).apply()
     }
 
+    fun saveLiveIqamaJs(js: String) {
+        prefs.edit().putString(KEY_LIVE_IQAMA, js).apply()
+    }
+
+    fun loadLiveIqamaJs(): String? = prefs.getString(KEY_LIVE_IQAMA, null)
+
     fun loadSchedule(): DaySchedule? {
         val raw = prefs.getString(KEY_SCHEDULE, null) ?: return null
         return runCatching {
@@ -98,5 +104,6 @@ class AppPreferences(context: Context) {
     companion object {
         private const val PREFS = "mgm_prefs"
         private const val KEY_SCHEDULE = "day_schedule"
+        private const val KEY_LIVE_IQAMA = "live_iqama_js"
     }
 }

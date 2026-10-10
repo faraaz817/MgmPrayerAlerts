@@ -7,42 +7,70 @@ import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 class AwqatPrayerRepository(
-    private val client: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(20, TimeUnit.SECONDS)
-        .readTimeout(20, TimeUnit.SECONDS)
-        .build(),
-    private val zoneId: ZoneId = ZoneId.of("Australia/Melbourne")
+    private val client: OkHttpClient = defaultClient(),
+    private val zoneId: ZoneId = ZoneId.of("Australia/Melbourne"),
+    private val bundledWtimes: String,
+    private val bundledIqama: String
 ) {
     companion object {
-        private const val WTIMES_URL =
+        private const val BASE = "https://www.awqat.com.au"
+        const val PAGE_URL = "$BASE/mgm/"
+        private const val USER_AGENT =
+            "Mozilla/5.0 (Linux; Android 14; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Mobile Safari/537.36"
+
+        private val WTIMES_URLS = listOf(
+            "$BASE/www/data/wtimes-AU.MELBOURNE.ini",
             "https://awqat.com.au/www/data/wtimes-AU.MELBOURNE.ini"
-        private const val IQAMA_URL = "https://awqat.com.au/mgm/iqamafixed.js"
-        private const val PAGE_URL = "https://awqat.com.au/mgm/"
-        private val DEFAULT_JUMUAH = listOf("12:30", "13:30", "14:15")
+        )
+        private val IQAMA_URLS = listOf(
+            "$BASE/mgm/iqamafixed.js",
+            "https://awqat.com.au/mgm/iqamafixed.js"
+        )
+
+        fun defaultClient(): OkHttpClient = OkHttpClient.Builder()
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val request = chain.request().newBuilder()
+                    .header("User-Agent", USER_AGENT)
+                    .header("Accept", "*/*")
+                    .header("Accept-Language", "en-AU,en;q=0.9")
+                    .header("Referer", PAGE_URL)
+                    .build()
+                chain.proceed(request)
+            }
+            .build()
     }
 
-    fun fetchToday(): DaySchedule {
-        val today = LocalDate.now(zoneId)
-        val wtimes = httpGet(WTIMES_URL)
-        val iqamaJs = httpGet(IQAMA_URL)
+    fun fetchToday(
+        today: LocalDate = LocalDate.now(zoneId),
+        cachedIqamaJs: String? = null
+    ): AwqatFetchResult {
+        val remoteWtimes = firstMatching(WTIMES_URLS, AwqatScheduleParser::looksLikeWtimes)
+        val remoteIqama = firstMatching(IQAMA_URLS, AwqatScheduleParser::looksLikeIqama)
         val pageHtml = runCatching { httpGet(PAGE_URL) }.getOrDefault("")
+            .takeIf { !AwqatScheduleParser.looksLikeHtmlChallenge(it) }
+            .orEmpty()
 
-        val azan = parseWtimesForDate(wtimes, today)
-        val iqamaConfig = parseIqamaConfig(iqamaJs)
-        val pairs = buildPairs(azan, iqamaConfig)
-        val jumuah = parseJumuah(pageHtml).ifEmpty { DEFAULT_JUMUAH }
+        val wtimes = remoteWtimes
+            ?: bundledWtimes.takeIf { AwqatScheduleParser.looksLikeWtimes(it) }
+            ?: error("Could not load Melbourne prayer times from Awqat")
+        val iqamaJs = sequenceOf(remoteIqama, cachedIqamaJs, bundledIqama)
+            .firstOrNull { it != null && AwqatScheduleParser.looksLikeIqama(it) }
+            ?: error("Could not load MGM iqama times from Awqat")
 
-        return DaySchedule(
-            dateKey = today.toString(),
-            fajr = pairs[0],
-            sunrise = pairs[1],
-            dhuhr = pairs[2],
-            asr = pairs[3],
-            maghrib = pairs[4],
-            isha = pairs[5],
-            jumuah = jumuah.map { TimeParse.formatStorage(TimeParse.parseFlexible(it)) },
-            fetchedAtEpochMs = System.currentTimeMillis()
+        return AwqatFetchResult(
+            schedule = AwqatScheduleParser.toSchedule(wtimes, iqamaJs, pageHtml, today),
+            liveIqamaJs = remoteIqama
         )
+    }
+
+    private fun firstMatching(urls: List<String>, accept: (String) -> Boolean): String? {
+        urls.forEach { url ->
+            val body = runCatching { httpGet(url) }.getOrNull() ?: return@forEach
+            if (accept(body)) return body
+        }
+        return null
     }
 
     private fun httpGet(url: String): String {
@@ -52,92 +80,6 @@ class AwqatPrayerRepository(
                 error("HTTP ${response.code} for $url")
             }
             return response.body?.string().orEmpty()
-        }
-    }
-
-    private fun parseWtimesForDate(raw: String, date: LocalDate): List<String> {
-        val key = String.format("%02d-%02d", date.monthValue, date.dayOfMonth)
-        val lineRegex = Regex("\"$key~~~~~([^\"]+)\"")
-        val match = lineRegex.find(raw) ?: error("No wtimes entry for $key")
-        val parts = match.groupValues[1].split("|")
-        require(parts.size >= 6) { "Incomplete wtimes row for $key" }
-        return parts.take(6)
-    }
-
-    private data class IqamaConfig(
-        val offsetsMinutes: List<Int?>,
-        val fixedTimes: List<String?>
-    )
-
-    private fun parseIqamaConfig(js: String): IqamaConfig {
-        val fixed = Regex("""FIXED_IQAMA_TIMES\s*=\s*\[([^\]]*)\]""")
-            .find(js)
-            ?.groupValues
-            ?.get(1)
-            ?.split(",")
-            ?.map { token ->
-                val cleaned = token.trim().trim('\'', '"')
-                cleaned.ifBlank { null }
-            }
-            ?: List(6) { null }
-
-        val offsetsRaw = Regex("""JS_IQAMA_TIME\s*=\s*\[([^\]]*)\]""")
-            .find(js)
-            ?.groupValues
-            ?.get(1)
-            ?: "0,30,,30,5,"
-
-        val offsets = offsetsRaw.split(",").map { token ->
-            val cleaned = token.trim()
-            if (cleaned.isEmpty()) null else cleaned.toIntOrNull()
-        }
-
-        return IqamaConfig(
-            offsetsMinutes = offsets,
-            fixedTimes = fixed
-        )
-    }
-
-    private fun buildPairs(azanRaw: List<String>, config: IqamaConfig): List<PrayerPair> {
-        val azanTimes = azanRaw.map { TimeParse.parseFlexible(it) }
-        // Indices in FIXED/JS arrays: 1=Fajr, 2=Dohr, 3=Asr, 4=Maghrib, 5=Isha
-        // Shoroq iqama offset defaults to +15 in awqat page.
-        val shoroqOffset = 15
-
-        fun jamaatFor(azanIndex: Int, configIndex: Int, defaultOffset: Int): String {
-            val azan = azanTimes[azanIndex]
-            val fixed = config.fixedTimes.getOrNull(configIndex)
-            val jamaatTime = if (!fixed.isNullOrBlank()) {
-                TimeParse.parseFlexible(fixed)
-            } else {
-                val offset = config.offsetsMinutes.getOrNull(configIndex) ?: defaultOffset
-                TimeParse.addMinutes(azan, offset)
-            }
-            return TimeParse.formatStorage(jamaatTime)
-        }
-
-        return listOf(
-            PrayerPair(TimeParse.formatStorage(azanTimes[0]), jamaatFor(0, 1, 30)),
-            // Sunrise is not a prayer; shown for reference only (+15 on awqat).
-            PrayerPair(
-                TimeParse.formatStorage(azanTimes[1]),
-                TimeParse.formatStorage(TimeParse.addMinutes(azanTimes[1], shoroqOffset))
-            ),
-            PrayerPair(TimeParse.formatStorage(azanTimes[2]), jamaatFor(2, 2, 15)),
-            PrayerPair(TimeParse.formatStorage(azanTimes[3]), jamaatFor(3, 3, 30)),
-            PrayerPair(TimeParse.formatStorage(azanTimes[4]), jamaatFor(4, 4, 5)),
-            PrayerPair(TimeParse.formatStorage(azanTimes[5]), jamaatFor(5, 5, 10))
-        )
-    }
-
-    private fun parseJumuah(html: String): List<String> {
-        val regex = Regex(
-            """JUMU'?AH\s+(\d{1,2}:\d{2}\s*[AP]M)\s*&\s*(\d{1,2}:\d{2}\s*[AP]M)\s*&\s*(\d{1,2}:\d{2}\s*[AP]M)""",
-            RegexOption.IGNORE_CASE
-        )
-        val match = regex.find(html.replace("&amp;", "&")) ?: return emptyList()
-        return match.groupValues.drop(1).map {
-            TimeParse.formatStorage(TimeParse.parseFlexible(it))
         }
     }
 }

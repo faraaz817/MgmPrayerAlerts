@@ -2,6 +2,12 @@
 
 Each `## x.y.z` section becomes the notes of the matching GitHub release. To publish a release, bump `versionCode` and `versionName` in `app/build.gradle.kts`, add a section here, and merge to `main`.
 
+## 1.1.1 — 2026-10-10
+
+### What's new
+- Prayer times still load when Awqat blocks the live timetable download
+- Source is now [www.awqat.com.au/mgm](https://www.awqat.com.au/mgm/), matching the mosque board
+
 ## 1.1.0 — 2026-10-08
 
 ### What's new
