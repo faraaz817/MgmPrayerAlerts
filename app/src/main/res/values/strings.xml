@@ -50,7 +50,7 @@
     <string name="send_test">Send test notification</string>
     <string name="sound_saved">Sound saved for %1$s</string>
     <string name="sound_save_failed">Couldn\'t save that sound</string>
-    <string name="footer_source">Times from awqat.com.au/mgm · refreshed daily at 3:00 AM</string>
+    <string name="footer_source">Times from www.awqat.com.au/mgm · refreshed daily at 3:00 AM</string>
 
     <!-- Banners -->
     <string name="banner_notifications_title">Notifications are off</string>
